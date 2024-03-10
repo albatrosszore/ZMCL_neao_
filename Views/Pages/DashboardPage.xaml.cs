@@ -7,6 +7,7 @@ using MinecraftLaunch.Classes.Models.Launch;
 using MinecraftLaunch.Components.Authenticator;
 using MinecraftLaunch.Components.Launcher;
 using MinecraftLaunch.Components.Resolver;
+using System.Diagnostics;
 using Wpf.Ui.Controls;
 using ZMCL_neao.ViewModels.Pages;
 using static ZMCL_neao.Views.Pages.SettingsPage;
@@ -29,27 +30,39 @@ namespace ZMCL_neao.Views.Pages
         {
             var account = new OfflineAuthenticator("Yang114").Authenticate();
             var resolver = new GameResolver(".minecraft");
-
+            //System.Windows.MessageBox.Show(javalist_);
             var config = new LaunchConfig
             {
                 Account = account,
                 IsEnableIndependencyCore = true,
                 JvmConfig = new(javalist_)
-               
+
             };
 
             Launcher launcher = new(resolver, config);
-            var gameProcessWatcher = await launcher.LaunchAsync(gamelist_);
 
-            //获取输出日志
-            gameProcessWatcher.OutputLogReceived += (sender, args) => {
-                Console.WriteLine(args.Text);
-            };
+            await Task.Run(async () =>
+            {
+                var gameProcessWatcher = await launcher.LaunchAsync(gamelist_);
 
-            //检测游戏退出
-            gameProcessWatcher.Exited += (sender, args) => {
-                Console.WriteLine("exit");
-            };
+                //获取输出日志
+                gameProcessWatcher.OutputLogReceived += (sender, args) =>
+                {
+                    Dispatcher.BeginInvoke(() =>
+                    {
+                        Debug.WriteLine(args.Text);
+                    });
+                };
+
+                //检测游戏退出
+                gameProcessWatcher.Exited += (sender, args) =>
+                {
+                    Dispatcher.BeginInvoke(() =>
+                    {
+                        Console.WriteLine("exit");
+                    });
+                };
+            });
         }
     }
 }
