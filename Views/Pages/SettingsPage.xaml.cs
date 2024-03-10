@@ -10,6 +10,8 @@ using Natsurainko.FluentCore.Extension.Windows.Model;
 using Natsurainko.FluentCore.Extension.Windows.Service;
 using MinecraftLaunch.Classes.Interfaces;
 using MinecraftLaunch.Components.Resolver;
+using MinecraftLaunch.Components.Fetcher;
+using MinecraftLaunch.Classes.Models.Game;
 
 namespace ZMCL_neao.Views.Pages
 {
@@ -23,12 +25,23 @@ namespace ZMCL_neao.Views.Pages
             ViewModel = viewModel;
             DataContext = this;
 
+            JavaFetcher javaFetcher = new JavaFetcher();
             InitializeComponent();
             IGameResolver gameResolver = new GameResolver(".minecraft");
             gamelist.ItemsSource = gameResolver.GetGameEntitys();
-            javalist.ItemsSource = JavaHelper.SearchJavaRuntime();
-            javalist_ = javalist.Text;
-            gamelist_ = gamelist.Text;
+            javalist.ItemsSource = javaFetcher.Fetch().ToList();
+
+            javalist.SelectionChanged += (_, _) =>
+            {
+                var java = javalist.SelectedItem as JavaEntry;
+                javalist_ = java.JavaPath;
+            };
+
+            gamelist.SelectionChanged += (_, _) =>
+            {
+                var game = gamelist.SelectedItem as GameEntry;
+                gamelist_ = game.Id;
+            };
         }
     }
 }

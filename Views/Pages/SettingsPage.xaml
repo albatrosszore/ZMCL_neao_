@@ -41,7 +41,7 @@
             GroupName="themeSelect"
             IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}" />
         <TextBlock Text="选择Java版本" FontSize="17"/>
-        <ComboBox x:Name="javalist"/>
+        <ComboBox x:Name="javalist" DisplayMemberPath="JavaPath"/>
         <TextBlock Text="选择MineCrfat版本" FontSize="17"/>
         <ComboBox x:Name="gamelist" DisplayMemberPath="Id"/>
         <TextBlock
